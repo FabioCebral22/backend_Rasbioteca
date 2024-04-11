@@ -8,7 +8,7 @@ app.use(morgan("dev"))
 app.get("/", (req,res)=>{
     res.send("This is Raulin")
 });
-
+app.use(express.json())
 app.use("/api", router)
 
 module.exports = app;
