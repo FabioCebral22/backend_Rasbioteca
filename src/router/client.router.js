@@ -1,4 +1,5 @@
 const router = require("express").Router();
+const jwt = require('jsonwebtoken');
 const { faker } = require("@faker-js/faker")
 const Clients = require("../model/client.model")
 router.get("/clients", async (req, res) => {
@@ -45,10 +46,15 @@ router.post("/clients/login", async (req, res) => {
             return res.status(404).json({ error: 'Client not found or invalid credentials' });
         }
 
+        const token = jwt.sign({ clientId: client.id }, 'secretKey', { expiresIn: '72h' });
+        
         res.status(200).json({
             ok: true,
             status: 200,
-            body: client
+            body: {
+                client,
+                token
+            }
         });
     } catch (error) {
         console.error('Error fetching client:', error);
