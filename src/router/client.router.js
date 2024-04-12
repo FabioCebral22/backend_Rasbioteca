@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const { faker, da } = require("@faker-js/faker")
+const { faker } = require("@faker-js/faker")
 const Clients = require("../model/client.model")
 router.get("/clients", async (req, res) => {
     const clients = await Clients.findAll()
@@ -30,6 +30,34 @@ router.get("/clients/:client_id", async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 });
+router.post("/clients/login", async (req, res) => {
+    const { client_email, client_password } = req.body;
+
+    try {
+        const client = await Clients.findOne({
+            where: {
+                client_email,
+                client_password
+            }
+        });
+
+        if (!client) {
+            return res.status(404).json({ error: 'Client not found or invalid credentials' });
+        }
+
+        res.status(200).json({
+            ok: true,
+            status: 200,
+            body: client
+        });
+    } catch (error) {
+        console.error('Error fetching client:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+
+
 
 
 router.post("/clients", async (req, res) => {
