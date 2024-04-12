@@ -33,13 +33,13 @@ router.get("/clients/:client_id", async (req, res) => {
 
 
 router.post("/clients", async (req, res) => {
-    const dataProducts = req.body
+    const dataClients = req.body
     await Clients.sync()
-    const createProduct = await Clients.create({
-        client_nickname: dataProducts.client_nickname   ,
-        client_email: dataProducts.client_email,
-        client_password: dataProducts.client_password,
-        client_name: dataProducts.client_name,
+    const updatedClient = await Clients.create({
+        client_nickname: dataClients.client_nickname   ,
+        client_email: dataClients.client_email,
+        client_password: dataClients.client_password,
+        client_name: dataClients.client_name,
 
     })
     res.status(201).json({
@@ -48,8 +48,27 @@ router.post("/clients", async (req, res) => {
         message: "Created Client"
     })
 })
-router.put("/clients", (req, res) => {
-    res.send("I am a router")
+router.put("/clients/:product_id", async (req, res) => {
+    const id = req.params.product_id;
+    const dataClients=req.body;
+    const updateClient = await Clients.update({
+        client_nickname: dataClients.client_nickname   ,
+        client_email: dataClients.client_email,
+        client_password: dataClients.client_password,
+        client_name: dataClients.client_name,
+    },
+    {
+        where: {
+            client_id:id,
+        }
+    }
+    );
+    res.status(200).json({
+        ok: true,
+        status: 200,
+        body: updateClient,
+        message: "Updated Client"
+    })
 })
 router.delete("/clients", (req, res) => {
     res.send("I am a router")
