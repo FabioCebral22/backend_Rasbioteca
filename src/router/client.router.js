@@ -10,12 +10,12 @@ router.get("/clients", async (req, res) => {
         body: clients
     })
 })
-router.get("/clients/:client_id", async (req, res) => {
-    const id = req.params.client_id; // Usar el nombre correcto del parámetro
+router.get("/clients/:client_email", async (req, res) => {
+    const email = req.params.client_email;
     try {
         const client = await Clients.findOne({
             where: {
-                client_id: id,
+                client_email: email,
             }
         });
         if (!client) {
@@ -46,13 +46,20 @@ router.post("/clients/login", async (req, res) => {
             return res.status(404).json({ error: 'Client not found or invalid credentials' });
         }
 
-        const token = jwt.sign({ clientId: client.id }, 'secretKey', { expiresIn: '72h' });
+        const clientData = {
+            client_id: client.client_id,
+            client_nickname: client.client_nickname,
+            client_email: client.client_email,
+            client_name: client.client_name
+        };
+
+        const token = jwt.sign({ clientData }, 'secretKey', { expiresIn: '72h' });
         
         res.status(200).json({
             ok: true,
             status: 200,
             body: {
-                client,
+                client: clientData,
                 token
             }
         });
@@ -61,6 +68,7 @@ router.post("/clients/login", async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 });
+
 
 
 
