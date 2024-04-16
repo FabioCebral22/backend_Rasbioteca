@@ -10,26 +10,38 @@ router.get("/clients", async (req, res) => {
         body: clients
     })
 })
-router.get("/clients/:client_email", async (req, res) => {
-    const email = req.params.client_email;
+router.get("/clients/profile", async (req, res) => {
+
+    const token = req.headers.authorization.split(' ')[1];
+    console.log(token)
+    if (!token) {
+        return res.status(401).json({ error: 'Token not provided' });
+    }
+
     try {
-        const client = await Clients.findOne({
-            where: {
-                client_email: email,
-            }
-        });
-        if (!client) {
-            return res.status(404).json({ error: 'Client not found' });
+
+    const decoded = jwt.verify(token, process.env.SECRET_KEY);
+    console.log(decoded)
+    const clientData = decoded.clientData;
+    console.log(clientData.client_email)
+    const client = await Clients.findOne({
+        where: {
+          client_email: clientData.client_email
         }
-        res.status(200).json({
-            ok: true,
-            status: 200,
-            body: client
-        });
+      });
+      if (!client) {
+        return res.status(404).json({ error: 'Client not found' });
+      }
+      console.log(client)
+      res.status(200).json({
+        ok: true,
+        status: 200,
+        body: client
+      });
     } catch (error) {
         console.error('Error fetching client:', error);
         res.status(500).json({ error: 'Internal server error' });
-    }
+      }
 });
 router.post("/clients/login", async (req, res) => {
     const { client_email, client_password } = req.body;
@@ -47,13 +59,10 @@ router.post("/clients/login", async (req, res) => {
         }
 
         const clientData = {
-            client_id: client.client_id,
-            client_nickname: client.client_nickname,
-            client_email: client.client_email,
-            client_name: client.client_name
+            client_email: client.client_email
         };
 
-        const token = jwt.sign({ clientData }, 'secretKey', { expiresIn: '72h' });
+        const token = jwt.sign({ clientData }, process.env.SECRET_KEY , { expiresIn: '72h' });
         
         res.status(200).json({
             ok: true,
@@ -68,11 +77,6 @@ router.post("/clients/login", async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 });
-
-
-
-
-
 
 router.post("/clients", async (req, res) => {
     const dataClients = req.body
@@ -90,6 +94,7 @@ router.post("/clients", async (req, res) => {
         message: "Created Client"
     })
 })
+
 router.put("/clients/:product_id", async (req, res) => {
     const id = req.params.product_id;
     const dataClients=req.body;

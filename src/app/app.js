@@ -3,6 +3,7 @@ const app = express();
 const router = require("../router/client.router");
 const morgan = require("morgan");
 const cors = require('cors');
+require('dotenv').config();
 
 app.use(cors({
   origin: 'http://localhost:5173',
