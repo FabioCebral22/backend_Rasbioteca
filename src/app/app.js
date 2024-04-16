@@ -16,7 +16,7 @@ app.get("/", (req, res) => {
   res.send("This is Raulin");
 });
 
-app.use("/api/clients", clientRouter);
-app.use("/api/companies", companyRouter);
+app.use("/api", clientRouter);
+app.use("/api", companyRouter);
 
 module.exports = app;
