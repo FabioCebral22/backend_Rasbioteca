@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express();
-const router = require("../router/client.router");
+const clientRouter = require("../router/client.router");
+const companyRouter = require("../router/company.router");
 const morgan = require("morgan");
 const cors = require('cors');
 require('dotenv').config();
@@ -15,6 +16,7 @@ app.get("/", (req, res) => {
   res.send("This is Raulin");
 });
 
-app.use("/api", router);
+app.use("/api/clients", clientRouter);
+app.use("/api/companies", companyRouter);
 
 module.exports = app;
