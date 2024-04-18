@@ -7,49 +7,41 @@ const sequelize = new Sequelize('abtnipbf', 'abtnipbf', '5pTKRnzXL7ebrRHvu2EqjYu
     port: 5432
 });
 
-class Company extends Model { }
+class Event extends Model {}
 
-Company.init({
-    company_nif: {
-        type: DataTypes.STRING,
-        allowNull: false,
+Event.init({
+    event_id: {
+        type: DataTypes.INTEGER,
         primaryKey: true,
-        unique:true
+        autoIncrement: true,
     },
-
-    company_name: {
+    event_name: {
         type: DataTypes.STRING,
         allowNull: false,
     },
-    company_password: {
+    event_description: {
         type: DataTypes.STRING,
         allowNull: false,
     },
-    company_email: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        unique:true
-    },
-    company_info: {
+    event_image: {
         type: DataTypes.STRING,
         allowNull: false,
     },
-    company_status: {
-        type: DataTypes.BOOLEAN,
-        allowNull:false,
-        defaultValue: true,
+    event_date: {
+        type: DataTypes.DATE,
+        allowNull: false,
     }
 }, {
     sequelize,
-    modelName: "Company"
+    modelName: "Event"
 });
 
-module.exports = Company;
+module.exports = Event;
 
 async function testConnection() {
     try {
         await sequelize.authenticate();
-        console.log('Connection has been established successfully (Company).');
+        console.log('Connection has been established successfully (Event).');
     } catch (error) {
         console.error('Unable to connect to the database:', error);
     }
@@ -57,4 +49,4 @@ async function testConnection() {
 
 testConnection();
 
-module.exports = Company;
+module.exports = Event;
