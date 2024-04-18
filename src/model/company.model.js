@@ -49,7 +49,7 @@ module.exports = Company;
 async function testConnection() {
     try {
         await sequelize.authenticate();
-        console.log('Connection has been established successfully.');
+        console.log('Connection has been established successfully (Company).');
     } catch (error) {
         console.error('Unable to connect to the database:', error);
     }

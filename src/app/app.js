@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const clientRouter = require("../router/client.router");
 const companyRouter = require("../router/company.router");
+const clubRouter = require("../router/club.router");
 const morgan = require("morgan");
 const cors = require('cors');
 require('dotenv').config();
@@ -18,5 +19,6 @@ app.get("/", (req, res) => {
 
 app.use("/api", clientRouter);
 app.use("/api", companyRouter);
+app.use("/api", clubRouter);
 
 module.exports = app;
