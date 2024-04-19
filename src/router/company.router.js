@@ -23,12 +23,13 @@ router.post("/company/login", async (req, res) => {
             }
         });
 
-        if (!Company) {
+        if (!company) {
             return res.status(404).json({ error: 'Company not found or invalid credentials' });
         }
 
         const companyData = {
-            company_email: company.client_email
+            company_email: company.company_email,
+            isCompany: true
         };
 
         const token = jwt.sign({ companyData }, process.env.SECRET_KEY , { expiresIn: '72h' });
@@ -42,26 +43,31 @@ router.post("/company/login", async (req, res) => {
             }
         });
     } catch (error) {
-        console.error('Error fetching client:', error);
+        console.error('Error fetching company:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
 
 router.post("/companies", async (req, res) => {
-    const companyData = req.body
-    await Company.sync()
-    const updatedCompany = await Company.create({
-        company_nif: companyData.company_nif,
-        company_email: companyData.company_email,
-        company_name: companyData.company_name,
-        company_password: companyData.company_password,
-        company_info: companyData.company_info,
-    })
-    res.status(201).json({
-        ok: true,
-        status: 201,
-        message: "Created Company"
-    })
-})
+    const companyData = req.body;
+    try {
+        const updatedCompany = await Company.create({
+            company_nif: companyData.company_nif,
+            company_email: companyData.company_email,
+            company_name: companyData.company_name,
+            company_password: companyData.company_password,
+            company_info: companyData.company_info,
+        });
+        console.log(companyData)
+        res.status(201).json({
+            ok: true,
+            status: 201,
+            message: "Created Company"
+        });
+    } catch (error) {
+        console.error('Error creating company:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
 
 module.exports = router;
