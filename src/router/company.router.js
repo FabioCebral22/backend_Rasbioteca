@@ -69,5 +69,38 @@ router.post("/companies", async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 });
+router.get("/company/profile", async (req, res) => {
+
+    const token = req.headers.authorization.split(' ')[1];
+    console.log(token)
+    if (!token) {
+        return res.status(401).json({ error: 'Token not provided' });
+    }
+
+    try {
+
+    const decoded = jwt.verify(token, process.env.SECRET_KEY);
+    console.log(decoded)
+    const companyData = decoded.companyData;
+    console.log(companyData.company_email)
+    const company = await Company.findOne({
+        where: {
+          company_email: companyData.company_email
+        }
+      });
+      if (!company) {
+        return res.status(404).json({ error: 'Company not found' });
+      }
+      console.log(company)
+      res.status(200).json({
+        ok: true,
+        status: 200,
+        body: company
+      });
+    } catch (error) {
+        console.error('Error fetching company:', error);
+        res.status(500).json({ error: 'Internal server error' });
+      }
+});
 
 module.exports = router;

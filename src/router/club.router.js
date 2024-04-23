@@ -25,4 +25,21 @@ router.post("/club", async (req, res) => {
   }
 });
 
+router.post("/clubs", async (req, res) => {
+  const clubData = req.body;
+  await Club.sync();
+  const updateClub = await Club.create({
+    club_name: clubData.club_name,
+    club_rules: clubData.club_rules,
+    club_description: clubData.club_description,
+    company_nif: clubData.company_nif,
+    club_schedule: clubData.club_schedule // Asegúrate de agregar club_schedule aquí
+  });
+  res.status(201).json({
+    ok: true,
+    status: 201,
+    message: "Created Client"
+  });
+});
+
 module.exports = router;
