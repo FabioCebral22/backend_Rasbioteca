@@ -38,8 +38,31 @@ router.post("/clubs", async (req, res) => {
   res.status(201).json({
     ok: true,
     status: 201,
-    message: "Created Client"
+    message: "Created Club"
   });
 });
+
+router.post("/company/nif", async (req, res) => {
+  try {
+    const { company_email } = req.body;
+    const company = await Company.findOne({
+      where: {
+        company_email: company_email
+      }
+    });
+    if (!company) {
+      return res.status(404).json({ error: 'Company not found' });
+    }
+    res.status(200).json({
+      ok: true,
+      status: 200,
+      company_nif: company.company_nif
+    });
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 
 module.exports = router;
