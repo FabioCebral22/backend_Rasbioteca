@@ -27,6 +27,10 @@ Club.init({
         type: DataTypes.STRING,
         allowNull: false,
     },
+    club_img: {
+        type: DataTypes.STRING,
+        allowNull: true,
+    },
 }, {
     sequelize,
     modelName: "Club"

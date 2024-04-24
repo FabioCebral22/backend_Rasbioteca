@@ -33,7 +33,7 @@ router.post("/clubs", async (req, res) => {
     club_rules: clubData.club_rules,
     club_description: clubData.club_description,
     company_nif: clubData.company_nif,
-    club_schedule: clubData.club_schedule // Asegúrate de agregar club_schedule aquí
+    club_schedule: clubData.club_schedule 
   });
   res.status(201).json({
     ok: true,
