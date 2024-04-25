@@ -95,8 +95,8 @@ router.post("/clients", async (req, res) => {
     })
 })
 
-router.put("/clients/:product_id", async (req, res) => {
-    const id = req.params.product_id;
+router.put("/clients/edit", async (req, res) => {
+    const id = req.params.client_id;
     const dataClients=req.body;
     const updateClient = await Clients.update({
         client_nickname: dataClients.client_nickname   ,

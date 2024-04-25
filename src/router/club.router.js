@@ -51,7 +51,7 @@ router.post('/clubs', async (req, res) => {
     message: 'Created Client'
   });
 });
-
+//CONSEGUIR EL NIF DE LA EMPRESA
 router.post("/company/nif", async (req, res) => {
   try {
     const { company_email } = req.body;
@@ -74,34 +74,48 @@ router.post("/company/nif", async (req, res) => {
   }
 });
 
-router.put('/club/:id', async (req, res) => {
-  try {
-    const id = req.params.id;
-    const { company_nif, club_name, club_rules, club_description, club_schedule, club_img } = req.body;
-    const club = await Club.findOne({ where: { id: id } });
+//EDITAR UN CLUB
 
-    if (!club) {
-      return res.status(404).json({ error: 'Club not found' });
-    }
-
-    club.company_nif = company_nif;
-    club.club_name = club_name;
-    club.club_rules = club_rules;
-    club.club_description = club_description;
-    club.club_schedule = club_schedule;
-    club.club_img = club_img;
-
-    await club.save();
-
-    res.status(200).json({
+router.put("/club/edit", async (req, res) => {
+  const id = req.params.club_id;
+  const dataClub=req.body;
+  const updatedClub = await Club.update({
+      club_name: dataClub.club_name   ,
+      club_rules: dataClub.club_rules,
+      club_description: dataClub.club_description,
+      club_img: dataClub.club_img,
+  },
+  {
+      where: {
+          club_id:id,
+      }
+  }
+  );
+  res.status(200).json({
       ok: true,
       status: 200,
-      message: 'Club updated successfully'
-    });
+      body: updatedClub,
+      message: "Updated Client"
+  })
+})
+router.put("/club/delete", async (req, res) => {
+  const clubId = req.body.club_id;
+
+  try {
+      const deletedClub = await Club.destroy({
+          where: {
+              club_id: clubId
+          }
+      });
+
+      if (deletedClub === 0) {
+          return res.status(404).send("No se encontró ningún club con el ID proporcionado.");
+      }
+
+      res.send(`Se ha eliminado el club con el ID: ${clubId}`);
   } catch (error) {
-    console.error('Error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+      console.error("Error al eliminar el club:", error);
+      res.status(500).send("Hubo un error al eliminar el club. Por favor, inténtalo de nuevo más tarde.");
   }
 });
-
 module.exports = router;
