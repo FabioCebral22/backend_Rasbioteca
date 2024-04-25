@@ -30,7 +30,7 @@ Client.init({
     client_name: {
         type:DataTypes.STRING,
         allowNull:false,
-    }
+    },
 }, {
     sequelize, // Pasa la instancia de Sequelize aquí
     modelName: "Client"
