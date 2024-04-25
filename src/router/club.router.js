@@ -104,7 +104,7 @@ router.put("/club/edit", async (req, res) => {
 })
 router.put("/club/delete", async (req, res) => {
   const clubId = req.body.club_id;
-
+  console.log("´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´"+clubId)
   try {
       const deletedClub = await Club.destroy({
           where: {
