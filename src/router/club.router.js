@@ -91,7 +91,12 @@ router.get("/companyclubs", async (req, res) => {
       return res.status(404).json({ error: 'Compañía no encontrada' });
     }
     const clubs = await Club.findAll({ where: { company_nif: company.company_nif } });
-    res.status(200).json(clubs);
+    res.status(200).json({
+      ok: true,
+      status: 200,
+      body: clubs,
+      message: "Owned clubs"
+    });
     console.log('+++++++++++++++++++++++++'+ clubs)
   } catch (error) {
     console.error('Error al obtener los clubes de la compañía:', error);
