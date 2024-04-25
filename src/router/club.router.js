@@ -1,29 +1,41 @@
 const router = require("express").Router();
 const Club = require("../model/club.model");
 const Company = require("../model/company.model");
+const jwt = require("jsonwebtoken")
+const express = require('express');
+const multer = require('multer');
 
-router.post("/club", async (req, res) => {
+const upload = multer({ dest: 'uploads/' }); 
+
+router.post('/club', upload.single('club_img'), async (req, res) => {
   try {
     const { company_nif, club_name, club_rules, club_description, club_schedule } = req.body;
+    const club_img = req.file.path; 
+
+    // Verifica si la compañía existe
     const company = await Company.findOne({ where: { company_nif } });
     if (!company) {
-      return res.status(404).json({ error: "La compañía no existe" });
+      return res.status(404).json({ error: 'La compañía no existe' });
     }
+
+    // Crea el club asociado a la compañía
     const club = await Club.create({
       club_owner: company_nif,
       club_name,
       club_rules,
       club_description,
-      club_schedule
+      club_schedule,
+      club_img
     });
+
     return res.status(201).json(club);
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ error: "Error interno del servidor" });
+    return res.status(500).json({ error: 'Error interno del servidor' });
   }
 });
 
-router.post("/clubs", async (req, res) => {
+router.post('/clubs', async (req, res) => {
   const clubData = req.body;
   await Club.sync();
   const updateClub = await Club.create({
@@ -36,7 +48,7 @@ router.post("/clubs", async (req, res) => {
   res.status(201).json({
     ok: true,
     status: 201,
-    message: "Created Club"
+    message: 'Created Client'
   });
 });
 //CONSEGUIR EL NIF DE LA EMPRESA
@@ -59,6 +71,36 @@ router.post("/company/nif", async (req, res) => {
   } catch (error) {
     console.error('Error:', error);
     res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+router.get("/companyclubs", async (req, res) => {
+  const token = req.headers.authorization.split(' ')[1];
+  
+  const { company_email } = req.body;
+  try {
+    
+    const decoded = jwt.verify(token, process.env.SECRET_KEY);
+    console.log(decoded.companyData)
+    console.log(decoded.companyData.company_email)
+    const company = await Company.findOne({
+       where: { company_email: decoded.companyData.company_email } 
+    });
+    console.log('----------------------'+company.company_nif)
+    if (!company) {
+      return res.status(404).json({ error: 'Compañía no encontrada' });
+    }
+    const clubs = await Club.findAll({ where: { company_nif: company.company_nif } });
+    res.status(200).json({
+      ok: true,
+      status: 200,
+      body: clubs,
+      message: "Owned clubs"
+    });
+    console.log('+++++++++++++++++++++++++'+ clubs)
+  } catch (error) {
+    console.error('Error al obtener los clubes de la compañía:', error);
+    res.status(500).json({ error: 'Error interno del servidor' });
   }
 });
 
