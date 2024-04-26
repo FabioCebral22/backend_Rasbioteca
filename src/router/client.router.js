@@ -4,6 +4,7 @@ const { faker } = require("@faker-js/faker")
 const Clients = require("../model/client.model")
 router.get("/clients", async (req, res) => {
     const clients = await Clients.findAll()
+    console.log(clients)
     res.status(200).json({
         ok: true,
         status: 200,
