@@ -1,8 +1,11 @@
 const express = require('express');
 const app = express();
+
 const clubRouter = require("../router/club.router");
 const clientRouter = require("../router/client.router");
 const companyRouter = require("../router/company.router");
+const eventRouter = require("../router/event.router");
+
 const path = require('path');
 const morgan = require("morgan");
 const cors = require('cors');
@@ -23,5 +26,6 @@ app.get("/", (req, res) => {
 app.use("/api", clubRouter);
 app.use("/api", clientRouter);
 app.use("/api", companyRouter);
+app.use("/api", eventRouter)
 
 module.exports = app;

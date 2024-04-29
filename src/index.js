@@ -1,6 +1,6 @@
-const app = require("./app/app")
-const sequelize = require("./database/database")
-const { Company, Club } = require('./model/loadModel');
+const app = require("./app/app");
+const sequelize = require("./database/database");
+const { Event } = require('./model/loadModel');
 const port = process.env.PORT || 3001;
 
 sequelize.sync()
