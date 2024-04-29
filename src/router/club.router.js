@@ -111,7 +111,7 @@ router.put("/club/edit", async (req, res) => {
 })
 router.put("/club/delete", async (req, res) => {
   const clubId = req.body.club_id;
-  console.log("´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´´"+clubId)
+  console.log("+++++++++++++++++++++++++++++++++++++++" + clubId)
   try {
       const deletedClub = await Club.destroy({
           where: {
@@ -137,7 +137,6 @@ router.post('/clubDetails', async (req, res) => {
       if (!club) {
           return res.status(404).json({ error: 'Club not found' });
       }
-      // Devolver los detalles del club
       res.status(200).json({
         ok: true,
         status: 200,
