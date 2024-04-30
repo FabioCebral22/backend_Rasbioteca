@@ -10,9 +10,9 @@ const upload = multer({ dest: 'uploads/' });
 router.post('/events', upload.single('event_img'), async (req, res) => {
     const eventData = req.body;
     const updateEvent = await Event.create({
-      event_name: eventData.club_name,
-      event_description: eventData.club_description,
-      event_date: eventData.club_schedule,
+      event_name: eventData.event_name,
+      event_description: eventData.event_description,
+      event_date: eventData.event_date,
       event_img: req.file ? req.file.path : null,
       club_id:eventData.club_id
     });

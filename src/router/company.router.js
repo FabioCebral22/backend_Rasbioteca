@@ -69,6 +69,29 @@ router.post("/companies", async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 });
+router.post("/check-club", async (req, res) => {
+    const { company_email, company_nif } = req.body;
+    try {
+        const company = await Company.findOne({
+            where: { company_email: company_email }
+        });
+        
+        if (!company) {
+            res.status(200).json({ exists: false });
+            return;
+        }
+
+        if (company.company_nif === company_nif) {
+            res.status(200).json({ exists: true });
+        } else {
+            res.status(200).json({ exists: false });
+        }
+    } catch (error) {
+        console.error('Error checking club:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
 router.get("/company/profile", async (req, res) => {
 
     const token = req.headers.authorization.split(' ')[1];

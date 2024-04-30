@@ -8,9 +8,11 @@ class Event extends Model {}
 
 Event.init({
     event_id: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.UUID,
+        defaultValue: UUIDV4,
         primaryKey: true,
-        autoIncrement: true,
+        allowNull: false,
+        unique:true
     },
     event_name: {
         type: DataTypes.STRING,
@@ -22,7 +24,7 @@ Event.init({
     },
     event_image: {
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: true,
     },
     event_date: {
         type: DataTypes.DATE,
