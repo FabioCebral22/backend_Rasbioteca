@@ -1,10 +1,6 @@
 const { Sequelize, Model, DataTypes, UUIDV4 } = require("sequelize")
 
-const sequelize = new Sequelize('abtnipbf', 'abtnipbf', '5pTKRnzXL7ebrRHvu2EqjYuZK0t8PT95', {
-    host: 'manny.db.elephantsql.com',
-    dialect: 'postgres',
-    port: 5432
-});
+const sequelize = require("../database/database")
 
 class Client extends Model { }
 
@@ -31,20 +27,13 @@ Client.init({
         type:DataTypes.STRING,
         allowNull:false,
     },
+    client_img: {
+        type: DataTypes.STRING,
+        allowNull: true,
+    },
 }, {
-    sequelize, // Pasa la instancia de Sequelize aquí
+    sequelize, 
     modelName: "Client"
 });
 
 module.exports = Client;
-
-async function testConnection() {
-    try {
-        await sequelize.authenticate();
-        console.log('Connection has been established successfully (Client).');
-    } catch (error) {
-        console.error('Unable to connect to the database:', error);
-    }
-}
-
-testConnection();

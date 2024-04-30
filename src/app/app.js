@@ -3,16 +3,18 @@ const app = express();
 const clubRouter = require("../router/club.router");
 const clientRouter = require("../router/client.router");
 const companyRouter = require("../router/company.router");
+const adminRouter = require("../router/admin.router");
 const path = require('path');
 const morgan = require("morgan");
 const cors = require('cors');
 require('dotenv').config();
 
-app.use('/uploads', express.static(path.join(__dirname, '/uploads')));
+app.use('/public', express.static(path.join(__dirname, '../public')));
 
 app.use(cors({
   origin: 'http://localhost:5173',
 }));
+
 app.use(morgan("dev"));
 app.use(express.json());
 
@@ -20,6 +22,7 @@ app.get("/", (req, res) => {
   res.send("This is Raulin");
 });
 
+app.use("/api", adminRouter);
 app.use("/api", clubRouter);
 app.use("/api", clientRouter);
 app.use("/api", companyRouter);

@@ -2,6 +2,7 @@ const { faker } = require("@faker-js/faker")
 const router = require("express").Router();
 const jwt = require('jsonwebtoken');
 const Company = require("../model/company.model");
+const bcrypt = require('bcrypt');
 
 
 router.get("/companies", async (req, res) => {
@@ -48,14 +49,19 @@ router.post("/company/login", async (req, res) => {
     }
 });
 
+const saltRounds = 10;
+
 router.post("/companies", async (req, res) => {
     const companyData = req.body;
+
+    const hashedPassword = await bcrypt.hash(companyData.company_password, saltRounds);
+
     try {
         const updatedCompany = await Company.create({
             company_nif: companyData.company_nif,
             company_email: companyData.company_email,
             company_name: companyData.company_name,
-            company_password: companyData.company_password,
+            company_password: hashedPassword, 
             company_info: companyData.company_info,
         });
         console.log(companyData)

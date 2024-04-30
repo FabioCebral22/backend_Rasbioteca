@@ -1,11 +1,5 @@
-const { tr } = require("@faker-js/faker");
-const { Sequelize, Model, DataTypes, UUIDV4 } = require("sequelize")
-
-const sequelize = new Sequelize('abtnipbf', 'abtnipbf', '5pTKRnzXL7ebrRHvu2EqjYuZK0t8PT95', {
-    host: 'manny.db.elephantsql.com',
-    dialect: 'postgres',
-    port: 5432
-});
+const { Sequelize, Model, DataTypes } = require("sequelize");
+const sequelize  = require("../database/database");
 
 class Admin extends Model {}
 
@@ -34,8 +28,6 @@ Admin.init({
     sequelize,
     modelName: "Admin"
 });
-
-module.exports = Admin;
 
 async function testConnection() {
     try {

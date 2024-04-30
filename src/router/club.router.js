@@ -1,11 +1,22 @@
 const router = require("express").Router();
 const Club = require("../model/club.model");
 const Company = require("../model/company.model");
-const jwt = require("jsonwebtoken")
+const jwt = require("jsonwebtoken");
 const express = require('express');
 const multer = require('multer');
+const path = require('path');
 
-const upload = multer({ dest: 'uploads/' }); 
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, path.join(__dirname, '../public/'));
+  },
+  filename: function (req, file, cb) {
+    const extension = path.extname(file.originalname);
+    cb(null, Date.now() + "-" + file.originalname);
+  },
+});
+
+const upload = multer({ storage: storage });
 
 
 router.post('/clubs', upload.single('club_img'), async (req, res) => {
@@ -17,7 +28,7 @@ router.post('/clubs', upload.single('club_img'), async (req, res) => {
     club_description: clubData.club_description,
     company_nif: clubData.company_nif,
     club_schedule: clubData.club_schedule,
-    club_img: req.file ? req.file.path : null
+    club_img: req.file ? '/public/' + req.file.filename : null
   });
   res.status(201).json({
     ok: true,
@@ -120,6 +131,15 @@ router.put("/club/delete", async (req, res) => {
   } catch (error) {
       console.error("Error al eliminar el club:", error);
       res.status(500).send("Hubo un error al eliminar el club. Por favor, inténtalo de nuevo más tarde.");
+  }
+});
+
+router.get('/club/all', async (req, res) => {
+  try {
+      const clubs = await Club.findAll();
+      res.status(200).json(clubs);
+  } catch (error) {
+      res.status(500).json({ error: 'An error occurred while fetching clubs' });
   }
 });
 module.exports = router;
