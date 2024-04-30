@@ -58,7 +58,14 @@ router.post("/company/nif", async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
-
+router.get("/findclubs", async (req, res) => {
+    const clubs = await Club.findAll()
+    res.status(200).json({
+        ok: true,
+        status: 200,
+        body: clubs
+    })
+});
 router.get("/companyclubs", async (req, res) => {
   const token = req.headers.authorization.split(' ')[1];
   
@@ -115,7 +122,7 @@ router.put("/club/edit", async (req, res) => {
 })
 router.put("/club/delete", async (req, res) => {
   const clubId = req.body.club_id;
-
+  console.log("+++++++++++++++++++++++++++++++++++++++" + clubId)
   try {
       const deletedClub = await Club.destroy({
           where: {
@@ -133,6 +140,26 @@ router.put("/club/delete", async (req, res) => {
       res.status(500).send("Hubo un error al eliminar el club. Por favor, inténtalo de nuevo más tarde.");
   }
 });
+
+router.post('/clubDetails', async (req, res) => {
+  const { clubId } = req.body;
+  try {
+      const club = await Club.findByPk(clubId);
+      if (!club) {
+          return res.status(404).json({ error: 'Club not found' });
+      }
+      res.status(200).json({
+        ok: true,
+        status: 200,
+        body: club,
+        message: "Club Details"
+    });
+  } catch (error) {
+      console.error('Error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 
 router.get('/club/all', async (req, res) => {
   try {

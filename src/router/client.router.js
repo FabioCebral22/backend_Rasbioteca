@@ -21,6 +21,7 @@ const upload = multer({ storage: storage });
 
 router.get("/clients", async (req, res) => {
     const clients = await Clients.findAll()
+    console.log(clients)
     res.status(200).json({
         ok: true,
         status: 200,
