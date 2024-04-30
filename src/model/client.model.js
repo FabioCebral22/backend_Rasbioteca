@@ -1,5 +1,4 @@
 const { Sequelize, Model, DataTypes, UUIDV4 } = require("sequelize")
-const sequelize  = require("../database/database")
 
 const sequelize = require("../database/database")
 
