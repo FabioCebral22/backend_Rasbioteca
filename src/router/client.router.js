@@ -74,7 +74,13 @@ router.post("/clients/login", async (req, res) => {
         });
 
         if (!client) {
-            return res.status(404).json({ error: 'Client not found or invalid credentials' });
+            return res.status(404).json({ error: 'Client not found' });
+        }
+        
+        const match = await bcrypt.compare(client_password, client.client_password);
+
+        if (!match) {
+            return res.status(401).json({ error: 'Invalid credentials' });
         }
 
         const clientData = {
