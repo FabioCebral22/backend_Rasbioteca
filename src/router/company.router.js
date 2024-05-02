@@ -19,13 +19,18 @@ router.post("/company/login", async (req, res) => {
     try {
         const company = await Company.findOne({
             where: {
-                company_email,
-                company_password
+                company_email
             }
         });
 
         if (!company) {
-            return res.status(404).json({ error: 'Company not found or invalid credentials' });
+            return res.status(404).json({ error: 'Company not found' });
+        }
+
+        const match = await bcrypt.compare(company_password, company.company_password);
+
+        if (!match) {
+            return res.status(401).json({ error: 'Invalid credentials' });
         }
 
         const companyData = {
