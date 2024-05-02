@@ -68,7 +68,6 @@ router.post("/clients/login", async (req, res) => {
         const client = await Clients.findOne({
             where: {
                 client_email,
-                client_password,
                 client_state: true 
             }
         });
