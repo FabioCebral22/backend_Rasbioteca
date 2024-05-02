@@ -67,7 +67,9 @@ router.post("/clients/login", async (req, res) => {
     try {
         const client = await Clients.findOne({
             where: {
-                client_email
+                client_email,
+                client_password,
+                client_state: true 
             }
         });
 
@@ -125,18 +127,16 @@ router.post("/clients", async (req, res) => {
 });
 
 router.put("/clients/edit", upload.single('client_img'), async (req, res) => {
-    const id = req.params.client_id;
     const dataClients=req.body;
+    console.log("+++++++++++++++++++++++++++++++++++++++++++EJECUTADA")
     const updateClient = await Clients.update({
         client_nickname: dataClients.client_nickname   ,
-        client_email: dataClients.client_email,
         client_password: dataClients.client_password,
-        client_name: dataClients.client_name,
         client_img: req.file ? '/public/' + req.file.filename : null
     },
     {
         where: {
-            client_id:id,
+            client_id:dataClients.client_id,
         }
     }
     );
@@ -172,22 +172,26 @@ router.get('/clients/all', async (req, res) => {
     }
 });
 
-router.delete("/clients/delete", async (req, res) => {
-    const clientId = req.body.client_id;
+router.put("/clients/toggle-state", async (req, res) => {
+    const clientId = req.body;
+    console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" + clientId.client_id)
 
     try {
-        const client = await Clients.findByPk(clientId);
+        const client = await Clients.findByPk(clientId.client_id);
         if (!client) {
             return res.status(404).json({ error: 'Client not found' });
         }
 
-        await client.destroy();
+        client.client_state = !client.client_state; 
 
-        res.status(200).json({ message: 'Client deleted successfully' });
+        await client.save();
+
+        res.status(200).json({ message: 'Client state toggled successfully', client_state: client.client_state });
     } catch (error) {
-        res.status(500).json({ error: 'An error occurred while deleting the client' });
+        res.status(500).json({ error: 'An error occurred while toggling client state' });
     }
 });
+
 
 router.delete("/clients", (req, res) => {
     res.send("I am a router")

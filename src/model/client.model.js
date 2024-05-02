@@ -31,6 +31,11 @@ Client.init({
         type: DataTypes.STRING,
         allowNull: true,
     },
+    client_state: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: true,
+    }
 }, {
     sequelize, 
     modelName: "Client"

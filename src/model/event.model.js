@@ -29,6 +29,11 @@ Event.init({
     event_date: {
         type: DataTypes.DATE,
         allowNull: false,
+    },
+    client_state: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
     }
 }, {
     sequelize,

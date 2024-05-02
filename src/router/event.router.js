@@ -21,7 +21,7 @@ router.post('/events', upload.single('event_img'), async (req, res) => {
       status: 201,
       message: 'Created Event'
     });
-  });
+  }); 
   
   router.get("/findevents", async (req, res) => {
     try {
