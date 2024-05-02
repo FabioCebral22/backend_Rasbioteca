@@ -5,6 +5,7 @@ const clubRouter = require("../router/club.router");
 const clientRouter = require("../router/client.router");
 const companyRouter = require("../router/company.router");
 const eventRouter = require("../router/event.router");
+const ticketRouter = require('../router/ticket.router')
 
 const adminRouter = require("../router/admin.router");
 const path = require('path');
@@ -29,6 +30,7 @@ app.use("/api", adminRouter);
 app.use("/api", clubRouter);
 app.use("/api", clientRouter);
 app.use("/api", companyRouter);
-app.use("/api", eventRouter)
+app.use("/api", eventRouter);
+app.use("/api", ticketRouter)
 
 module.exports = app;

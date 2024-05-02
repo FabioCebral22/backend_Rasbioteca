@@ -2,6 +2,7 @@ const sequelize = require('../database/database');
 const Company = require('./company.model');
 const Club = require('./club.model');
 const Event = require('./event.model');
+const Ticket = require('./ticket.model')
 
 Event.belongsTo(Club, {
   foreignKey: 'club_id'
@@ -28,10 +29,18 @@ Company.hasMany(Club, {
     
 });
 
+Event.hasMany(Ticket, {
+  foreignKey: 'event_id'
+})
+Ticket.belongsTo(Event, {
+  foreignKey: 'event_id'
+} )
+
 module.exports = {
   Event,
   Company,
   Club,
   Admin,
-  Client
+  Client,
+  Ticket
 };

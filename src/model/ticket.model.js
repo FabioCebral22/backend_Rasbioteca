@@ -16,33 +16,24 @@ Ticket.init({
         autoIncrement: true,
     },
     ticket_price: {
-        type: DataTypes.NUMBER,
+        type: DataTypes.DECIMAL,
         allowNull: false,
     },
     ticket_qr_code: {
-        type: DataTypes.NUMBER,
+        type: DataTypes.INTEGER,
         allowNull: false,
     },
     ticket_used: {
         type: DataTypes.BOOLEAN,
         defaultValue: false,
+    },
+    ticket_status: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: true,
     }
 }, {
     sequelize,
     modelName: "Ticket"
 });
-
-module.exports = Ticket;
-
-async function testConnection() {
-    try {
-        await sequelize.authenticate();
-        console.log('Connection has been established successfully (Ticket).');
-    } catch (error) {
-        console.error('Unable to connect to the database:', error);
-    }
-}
-
-testConnection();
 
 module.exports = Ticket;
