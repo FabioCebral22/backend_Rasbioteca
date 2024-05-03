@@ -19,7 +19,10 @@ router.post("/company/login", async (req, res) => {
     try {
         const company = await Company.findOne({
             where: {
-                company_email
+                company_email,
+                company_status: true 
+
+
             }
         });
 
@@ -100,6 +103,24 @@ router.post("/check-club", async (req, res) => {
     } catch (error) {
         console.error('Error checking club:', error);
         res.status(500).json({ error: 'Internal server error' });
+    }
+});
+router.put("/companies/toggle-state", async (req, res) => {
+    const company_nif = req.body.company_nif;
+
+    try {
+        const company = await Company.findByPk(company_nif);
+        if (!company) {
+            return res.status(404).json({ error: 'Company not found' });
+        }
+
+        company.company_status = !company.company_status;
+
+        await company.save();
+
+        res.status(200).json({ message: 'Company status toggled successfully', company_status: company.company_status });
+    } catch (error) {
+        res.status(500).json({ error: 'An error occurred while toggling company status' });
     }
 });
 
