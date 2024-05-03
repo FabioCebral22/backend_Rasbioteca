@@ -2,6 +2,7 @@ const router = require("express").Router();
 const jwt = require('jsonwebtoken');
 const Event = require("../model/event.model");
 const multer = require('multer');
+const { Op } = require('sequelize');
 
 const upload = multer({ dest: 'uploads/' }); 
 
@@ -69,6 +70,28 @@ router.put("/event/delete", async (req, res) => {
   }
 });
 
+router.get("/clubEvents/:clubId", async (req, res) => {
+  const clubId = req.params.clubId;
+  try {
+    const currentDate = new Date();
+    const events = await Event.findAll({
+      where: {
+        club_id: clubId,
+        event_date: {
+          [Op.gt]: currentDate // Filtrar eventos con fecha posterior a la actual
+        }
+      }
+    });
 
+    res.status(200).json({
+      ok: true,
+      status: 200,
+      body: events
+    });
+  } catch (error) {
+    console.error('Error al buscar eventos del club:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
 
 module.exports = router;
