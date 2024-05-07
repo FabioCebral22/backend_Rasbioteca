@@ -1,31 +1,27 @@
 const { tr } = require("@faker-js/faker");
 const { Sequelize, Model, DataTypes, UUIDV4 } = require("sequelize")
 
-const sequelize = new Sequelize('abtnipbf', 'abtnipbf', '5pTKRnzXL7ebrRHvu2EqjYuZK0t8PT95', {
-    host: 'manny.db.elephantsql.com',
-    dialect: 'postgres',
-    port: 5432
-});
+const sequelize = require("../database/database")
 
 class Ticket extends Model {}
 
 Ticket.init({
     ticket_id: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.UUID,
         primaryKey: true,
-        autoIncrement: true,
+        defaultValue: UUIDV4
+    },
+    ticket_name: {
+        type: DataTypes.STRING,
+        allowNull:false
     },
     ticket_price: {
         type: DataTypes.DECIMAL,
         allowNull: false,
     },
-    ticket_qr_code: {
+    ticket_quantity: {
         type: DataTypes.INTEGER,
-        allowNull: false,
-    },
-    ticket_used: {
-        type: DataTypes.BOOLEAN,
-        defaultValue: false,
+        allowNull:false
     },
     ticket_status: {
         type: DataTypes.BOOLEAN,

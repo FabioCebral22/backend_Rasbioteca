@@ -128,9 +128,11 @@ router.post("/clients", async (req, res) => {
 router.put("/clients/edit", upload.single('client_img'), async (req, res) => {
     const dataClients=req.body;
     console.log("+++++++++++++++++++++++++++++++++++++++++++EJECUTADA")
+    const hashedPassword = await bcrypt.hash(dataClients.client_password, saltRounds);
+
     const updateClient = await Clients.update({
         client_nickname: dataClients.client_nickname   ,
-        client_password: dataClients.client_password,
+        client_password: hashedPassword,
         client_img: req.file ? '/public/' + req.file.filename : null
     },
     {

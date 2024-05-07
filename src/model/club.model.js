@@ -31,6 +31,10 @@ Club.init({
         type: DataTypes.STRING,
         allowNull: true,
     },
+    club_status: {
+        type: DataTypes.BOOLEAN,
+        defaultValue:true
+    }
 }, {
     sequelize,
     modelName: "Club"

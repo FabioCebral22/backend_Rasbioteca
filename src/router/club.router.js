@@ -1,6 +1,7 @@
 const router = require("express").Router();
 const Club = require("../model/club.model");
 const Company = require("../model/company.model");
+const Event = require("../model/event.model")
 const jwt = require("jsonwebtoken");
 const express = require('express');
 const multer = require('multer');
@@ -140,6 +141,24 @@ router.put("/club/delete", async (req, res) => {
       res.status(500).send("Hubo un error al eliminar el club. Por favor, inténtalo de nuevo más tarde.");
   }
 });
+router.put("/clubs/toggle-state", async (req, res) => {
+  const clubId = req.body;
+
+  try {
+      const club = await Club.findByPk(clubId.club_id);
+      if (!club) {
+          return res.status(404).json({ error: 'Club not found' });
+      }
+
+      club.club_status = !club.club_status; 
+
+      await club.save();
+
+      res.status(200).json({ message: 'Club state toggled successfully', club_status: club.club_status });
+  } catch (error) {
+      res.status(500).json({ error: 'An error occurred while toggling club state' });
+  }
+});
 
 router.post('/clubDetails', async (req, res) => {
   const { clubId } = req.body;
@@ -169,4 +188,22 @@ router.get('/club/all', async (req, res) => {
       res.status(500).json({ error: 'An error occurred while fetching clubs' });
   }
 });
+router.post('/clubs/events', async (req, res) => {
+  const { club_id } = req.body; // Corregido para que coincida con el campo club_id enviado desde el frontend
+  console.log("Club ID:", club_id); // Verifica que recibas correctamente club_id en el servidor
+  try {
+    const club = await Club.findByPk(club_id);
+    if (!club) {
+      return res.status(404).json({ error: 'Club not found' });
+    }
+
+    const events = await Event.findAll({ where: { club_id: club_id } }); // Corregido para usar club_id
+    res.status(200).json(events);
+  } catch (error) {
+    console.error('Error fetching club events:', error);
+    res.status(500).json({ error: 'An error occurred while fetching club events' });
+  }
+});
+
+
 module.exports = router;

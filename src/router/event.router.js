@@ -68,6 +68,24 @@ router.put("/event/delete", async (req, res) => {
       res.status(500).send("Hubo un error al eliminar el evento. Por favor, inténtalo de nuevo más tarde.");
   }
 });
+router.put("/event/toggle-state", async (req, res) => {
+  const eventID = req.body;
+
+  try {
+      const event = await Event.findByPk(eventID.event_id);
+      if (!event) {
+          return res.status(404).json({ error: 'Event not found' });
+      }
+
+      event.client_state = !event.client_state; 
+
+      await event.save();
+
+      res.status(200).json({ message: 'Club state toggled successfully', client_state: event.client_state });
+  } catch (error) {
+      res.status(500).json({ error: 'An error occurred while toggling event state' });
+  }
+});
 
 
 

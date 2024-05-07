@@ -3,6 +3,28 @@ const sequelize = require("./database/database");
 const { Event } = require('./model/loadModel');
 const port = process.env.PORT || 3001;
 
+//vaciar una tabla
+
+// const { Club } = require('./model/loadModel');
+
+// async function recreateTicketTable() {
+//   try {
+//     await Club.drop({ cascade: true });
+
+//     await Club.sync();
+
+//     console.log('La tabla Ticket se ha recreado exitosamente.');
+//   } catch (error) {
+//     console.error('Error al recrear la tabla Ticket:', error);
+//   } finally {
+//     await sequelize.close();
+//   }
+// }
+
+// recreateTicketTable();
+
+
+
 sequelize.sync()
 .then(() => {
     console.log("Database connected and models synchronized");
