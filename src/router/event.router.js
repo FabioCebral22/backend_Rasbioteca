@@ -5,24 +5,54 @@ const multer = require('multer');
 const { Op } = require('sequelize');
 
 const upload = multer({ dest: 'uploads/' }); 
+const Ticket = require("../model/ticket.model")
 
 
 
 router.post('/events', upload.single('event_img'), async (req, res) => {
-    const eventData = req.body;
-    const updateEvent = await Event.create({
-      event_name: eventData.event_name,
-      event_description: eventData.event_description,
-      event_date: eventData.event_date,
-      event_img: req.file ? req.file.path : null,
-      club_id:eventData.club_id
-    });
-    res.status(201).json({
-      ok: true,
-      status: 201,
-      message: 'Created Event'
-    });
-  }); 
+  try {
+      const eventData = req.body;
+      console.log(eventData.tickets);
+
+      // Crear el evento
+      const createdEvent = await Event.create({
+          event_name: eventData.event_name,
+          event_description: eventData.event_description,
+          event_date: eventData.event_date,
+          event_img: req.file ? req.file.path : null,
+          club_id: eventData.club_id
+      });
+
+      // Obtener el último evento creado
+      const lastEvent = await Event.findOne({
+          order: [['createdAt', 'DESC']]
+      });
+
+      // Iterar sobre la lista de tickets y crear un ticket para cada uno
+      for (const ticketData of eventData.tickets) {
+          await Ticket.create({
+              ticket_name: ticketData.ticket_name,
+              ticket_price: ticketData.ticket_price,
+              ticket_quantity: ticketData.ticket_quantity,
+              event_id: lastEvent.event_id // Asignar el ID del último evento creado al ticket
+          });
+      }
+
+      res.status(201).json({
+          ok: true,
+          status: 201,
+          message: 'Created Event and Tickets'
+      });
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({
+          ok: false,
+          status: 500,
+          message: 'Internal Server Error'
+      });
+  }
+});
+
   
   router.get("/findevents", async (req, res) => {
     try {

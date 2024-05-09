@@ -33,7 +33,11 @@ Company.init({
         type: DataTypes.BOOLEAN,
         allowNull:false,
         defaultValue: true,
-    }
+    },
+    company_img: {
+        type: DataTypes.STRING,
+        allowNull: true,
+    },
 }, {
     sequelize,
     modelName: "Company"

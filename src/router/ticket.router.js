@@ -6,6 +6,21 @@ const multer = require('multer');
 const upload = multer({ dest: 'uploads/' }); 
 
 router.post('/tickets', async (req, res) => {
+  try {
+      const eventId = req.body.eventId;
+      const tickets = await Ticket.findAll({
+          where: {
+              event_id: eventId,
+          },
+      });
+      res.json(tickets);
+  } catch (error) {
+      console.error('Error al buscar tickets:', error);
+      res.status(500).json({ error: 'Error al buscar tickets' });
+  }
+});
+
+router.post('/tickets', async (req, res) => {
   const dataTicket = req.body;
 
   try {
