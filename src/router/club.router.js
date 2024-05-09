@@ -99,28 +99,43 @@ router.get("/companyclubs", async (req, res) => {
 
 //EDITAR UN CLUB
 
-router.put("/club/edit", async (req, res) => {
-  const id = req.params.club_id;
-  const dataClub=req.body;
-  const updatedClub = await Club.update({
-      club_name: dataClub.club_name   ,
-      club_rules: dataClub.club_rules,
-      club_description: dataClub.club_description,
-      club_img: dataClub.club_img,
-  },
-  {
-      where: {
-          club_id:id,
+router.put("/clubs/edit/:clubId", upload.single('club_img'), async (req, res) => {
+  const clubId = req.params.clubId;
+  const { club_name, club_rules, club_description, club_schedule } = req.body;
+  
+  try {
+      let clubDataToUpdate = {
+          club_name,
+          club_rules,
+          club_description,
+          club_schedule
+      };
+
+      if (req.file) {
+          clubDataToUpdate.club_img = '/public/' + req.file.filename;
       }
+      
+      const updatedClub = await Club.update(clubDataToUpdate, {
+          where: {
+              club_id: clubId
+          }
+      });
+
+      res.status(200).json({
+          ok: true,
+          status: 200,
+          body: updatedClub,
+          message: "Club updated successfully"
+      });
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Internal server error' });
   }
-  );
-  res.status(200).json({
-      ok: true,
-      status: 200,
-      body: updatedClub,
-      message: "Updated Client"
-  })
-})
+});
+
+
+
+
 router.put("/club/delete", async (req, res) => {
   const clubId = req.body.club_id;
   console.log("+++++++++++++++++++++++++++++++++++++++" + clubId)
