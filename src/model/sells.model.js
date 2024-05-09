@@ -12,7 +12,7 @@ Sells.init({
         autoIncrement: true,
     },
     sell_total_price: {
-        type: DataTypes.NUMBER,
+        type: DataTypes.INTEGER,
         allowNull: false,
     },
     sell_date: {
