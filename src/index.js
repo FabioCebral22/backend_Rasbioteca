@@ -5,13 +5,13 @@ const port = process.env.PORT || 3001;
 
 //vaciar una tabla
 
-// const { Club } = require('./model/loadModel');
+// const { Sells } = require('./model/loadModel');
 
 // async function recreateTicketTable() {
 //   try {
-//     await Club.drop({ cascade: true });
+//     await Sells.drop({ cascade: true });
 
-//     await Club.sync();
+//     await Sells.sync();
 
 //     console.log('La tabla Ticket se ha recreado exitosamente.');
 //   } catch (error) {

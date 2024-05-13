@@ -1,9 +1,68 @@
 const router = require("express").Router();
 const jwt = require('jsonwebtoken');
 const Ticket = require("../model/ticket.model");
+const Event = require("../model/event.model")
 const multer = require('multer');
-
+const Client= require("../model/client.model")
+const Sells =require("../model/sells.model");
+const { UUIDV4 } = require("sequelize");
 const upload = multer({ dest: 'uploads/' }); 
+const { v4: uuidv4 } = require('uuid');
+
+
+router.post('/ticketsid', async (req, res) => {
+  try {
+    const { ticketName } = req.body;
+
+    const ticket = await Ticket.findOne({
+      where: {
+        ticket_name: ticketName
+      }
+    });
+
+    if (!ticket) {
+      return res.status(404).json({ error: 'Ticket not found' });
+    }
+
+    res.json({ ticketId: ticket.ticket_id });
+  } catch (error) {
+    console.error('Error al buscar ticket por nombre:', error);
+    res.status(500).json({ error: 'Error al buscar ticket por nombre' });
+  }
+});
+
+
+router.post('/add-sell', async (req, res) => {
+  try {
+    const { client_email, sell_total_price, ticket_id, qr_guests } = req.body;
+
+    const client = await Client.findOne({
+      where: {
+        client_email: client_email
+      }
+    });
+    console.log(client)
+
+    if (!client) {
+      return res.status(404).json({ error: 'Client not found' });
+    }
+    const sell_id = uuidv4();
+    const sell = await Sells.create({
+      client_id: client.client_id,
+      sell_total_price: sell_total_price,
+      qr_guests: qr_guests,
+      ticket_id: ticket_id,
+      qr_code: `QR_CODE_${sell_id}`
+    });
+
+    // Devuelve la venta creada como respuesta
+    res.json(sell);
+  } catch (error) {
+    console.error('Error al agregar la venta:', error);
+    res.status(500).json({ error: 'Error al agregar la venta' });
+  }
+});
+
 
 router.post('/tickets', async (req, res) => {
   try {
@@ -19,6 +78,54 @@ router.post('/tickets', async (req, res) => {
       res.status(500).json({ error: 'Error al buscar tickets' });
   }
 });
+
+router.post('/sells-by-email', async (req, res) => {
+  try {
+    const { client_email } = req.body;
+
+    const client = await Client.findOne({ email: client_email });
+    if (!client) {
+      return res.status(404).json({ error: 'Cliente no encontrado' });
+    }
+
+    const sells = await Sells.findAll({ client_id: client.client_id });
+
+    res.json(sells); 
+  } catch (error) {
+    console.error('Error al obtener las ventas del cliente:', error);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+});
+router.post('/sells-by-ticket', async (req, res) => {
+  try {
+    const { ticket_id } = req.body;
+
+    const sell = await Sells.findOne({ ticket_id });
+    if (!sell) {
+      return res.status(404).json({ error: 'Venta no encontrada para el ticket ID proporcionado' });
+    }
+
+    const ticket = await Ticket.findOne({ _id: ticket_id });
+    if (!ticket) {
+      return res.status(404).json({ error: 'Ticket no encontrado para el ticket ID proporcionado' });
+    }
+
+    const event = await Event.findOne({ _id: ticket.event_id });
+    if (!event) {
+      return res.status(404).json({ error: 'Evento no encontrado para el ticket ID proporcionado' });
+    }
+
+    res.json({
+      sell,
+      ticket_name: ticket.ticket_name,
+      event
+    });
+  } catch (error) {
+    console.error('Error al obtener la venta y los datos del evento:', error);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+});
+
 
 router.post('/tickets', async (req, res) => {
   const dataTicket = req.body;

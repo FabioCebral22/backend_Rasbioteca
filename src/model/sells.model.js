@@ -7,9 +7,9 @@ class Sells extends Model {}
 
 Sells.init({
     sell_id: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.UUID,
+        defaultValue: UUIDV4,
         primaryKey: true,
-        autoIncrement: true,
     },
     sell_total_price: {
         type: DataTypes.INTEGER,
