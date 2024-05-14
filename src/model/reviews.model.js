@@ -1,20 +1,16 @@
 const { Sequelize, Model, DataTypes, UUIDV4 } = require("sequelize")
 
-const sequelize = new Sequelize('abtnipbf', 'abtnipbf', '5pTKRnzXL7ebrRHvu2EqjYuZK0t8PT95', {
-    host: 'manny.db.elephantsql.com',
-    dialect: 'postgres',
-    port: 5432
-});
+const sequelize  = require("../database/database");
 
 class Reviews extends Model {}
 
 Reviews.init({
     review_id: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.UUID,
+        defaultValue: UUIDV4,
         primaryKey: true,
-        autoIncrement: true,
     },
-    review: {
+    review_data: {
         type: DataTypes.STRING,
         allowNull: false,
     },
@@ -22,21 +18,17 @@ Reviews.init({
         type: DataTypes.DATE,
         allowNull: false,
         defaultValue: DataTypes.NOW,
+    },
+    review_value: {
+        type: DataTypes.INTEGER, 
+        allowNull: false, 
     }
-}, {
+    }
+    , {
     sequelize,
     modelName: "Reviews"
 });
 
 module.exports = Reviews;
 
-async function testConnection() {
-    try {
-        await sequelize.authenticate();
-        console.log('Connection has been established successfully (Reviews).');
-    } catch (error) {
-        console.error('Unable to connect to the database:', error);
-    }
-}
 
-testConnection();

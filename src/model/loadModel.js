@@ -7,6 +7,7 @@ const Ticket = require('./ticket.model');
 const Admin = require('./admin.model');
 const Client = require('./client.model');
 const Sells = require('./sells.model');
+const Reviews = require('./reviews.model')
 
 Event.belongsTo(Club, {
     foreignKey: 'club_id'
@@ -35,7 +36,6 @@ Ticket.belongsTo(Event, {
     foreignKey: 'event_id'
 });
 
-// Aquí puedes añadir las relaciones para Sells
 Sells.belongsTo(Client, {
     foreignKey: 'client_id'
 });
@@ -49,6 +49,19 @@ Sells.belongsTo(Ticket, {
 Ticket.hasMany(Sells, {
     foreignKey: 'ticket_id'
 });
+Reviews.belongsTo(Client, {
+    foreignKey: 'client_id'
+});
+Client.hasMany(Reviews, {
+    foreignKey: 'client_id'
+});
+
+Reviews.belongsTo(Club, {
+    foreignKey: 'club_id'
+});
+Club.hasMany(Reviews, {
+    foreignKey: 'club_id'
+});
 
 module.exports = {
     Event,
@@ -57,5 +70,6 @@ module.exports = {
     Admin,
     Client,
     Ticket,
-    Sells
+    Sells,
+    Reviews
 };

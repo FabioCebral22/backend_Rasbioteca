@@ -26,7 +26,6 @@ const storage = multer.diskStorage({
         const eventData = req.body;
         console.log(eventData.tickets);
         const imagePath = req.file ? `/public/${req.file.filename}` : null;
-        // Crear el evento
         const createdEvent = await Event.create({
             event_name: eventData.event_name,
             event_description: eventData.event_description,
@@ -35,18 +34,16 @@ const storage = multer.diskStorage({
             club_id: eventData.club_id
         });
   
-        // Obtener el último evento creado
         const lastEvent = await Event.findOne({
             order: [['createdAt', 'DESC']]
         });
   
-        // Iterar sobre la lista de tickets y crear un ticket para cada uno
         for (const ticketData of eventData.tickets) {
             await Ticket.create({
                 ticket_name: ticketData.ticket_name,
                 ticket_price: ticketData.ticket_price,
                 ticket_quantity: ticketData.ticket_quantity,
-                event_id: lastEvent.event_id // Asignar el ID del último evento creado al ticket
+                event_id: lastEvent.event_id 
             });
         }
   

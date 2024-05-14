@@ -55,7 +55,6 @@ router.post('/add-sell', async (req, res) => {
       qr_code: `QR_CODE_${sell_id}`
     });
 
-    // Devuelve la venta creada como respuesta
     res.json(sell);
   } catch (error) {
     console.error('Error al agregar la venta:', error);
@@ -82,15 +81,19 @@ router.post('/tickets', async (req, res) => {
 router.post('/sells-by-email', async (req, res) => {
   try {
     const { client_email } = req.body;
-
-    const client = await Client.findOne({ email: client_email });
+    console.log("+++++++++++++++++++++++++++++++++++++++++" + client_email)
+    const client = await Client.findOne({where: {client_email: client_email } });
     if (!client) {
       return res.status(404).json({ error: 'Cliente no encontrado' });
     }
+console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++" + client.client_id)
 
-    const sells = await Sells.findAll({ client_id: client.client_id });
+const sells = await Sells.findAll({ where: { client_id: client.client_id } });
 
-    res.json(sells); 
+console.log("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" + sells); 
+
+res.json(sells);
+
   } catch (error) {
     console.error('Error al obtener las ventas del cliente:', error);
     res.status(500).json({ error: 'Error interno del servidor' });
