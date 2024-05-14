@@ -8,6 +8,8 @@ const Sells =require("../model/sells.model");
 const { UUIDV4 } = require("sequelize");
 const upload = multer({ dest: 'uploads/' }); 
 const { v4: uuidv4 } = require('uuid');
+const Club = require("../model/club.model");
+const Company = require("../model/company.model")
 
 
 router.post('/ticketsid', async (req, res) => {
@@ -81,16 +83,13 @@ router.post('/tickets', async (req, res) => {
 router.post('/sells-by-email', async (req, res) => {
   try {
     const { client_email } = req.body;
-    console.log("+++++++++++++++++++++++++++++++++++++++++" + client_email)
     const client = await Client.findOne({where: {client_email: client_email } });
     if (!client) {
       return res.status(404).json({ error: 'Cliente no encontrado' });
     }
-console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++" + client.client_id)
 
 const sells = await Sells.findAll({ where: { client_id: client.client_id } });
 
-console.log("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" + sells); 
 
 res.json(sells);
 
@@ -99,6 +98,80 @@ res.json(sells);
     res.status(500).json({ error: 'Error interno del servidor' });
   }
 });
+
+
+
+
+router.post('/checkqr', async (req, res) => {
+  try {
+    const { qr_code, company_email } = req.body;
+    
+    const sell = await Sells.findOne({ 
+      where: { 
+        qr_code: qr_code,
+      } 
+    });
+
+    if (!sell) {
+      return res.status(404).json({ error: 'Venta no encontrada' });
+    }
+
+    const ticket = await Ticket.findOne({ 
+      where: { 
+        ticket_id: sell.ticket_id
+      } 
+    });
+
+    if (!ticket) {
+      return res.status(404).json({ error: 'Ticket no encontrado' });
+    }
+
+
+    const event = await Event.findOne({
+      where: { event_id: ticket.event_id }
+    });
+
+    if (!event) {
+      return res.status(404).json({ error: 'Evento no encontrado' });
+    }
+
+
+    const club = await Club.findOne({
+      where: { club_id: event.club_id }
+    });
+
+    if (!club) {
+      return res.status(404).json({ error: 'Club no encontrado' });
+    }
+
+    const eventCompanyNIF = club.company_nif;
+    const company = await Company.findOne({
+      where: { company_email: company_email }
+    });
+
+    if (!company) {
+      return res.status(404).json({ error: 'Compañía no encontrada' });
+    }
+
+    if (eventCompanyNIF === company.company_nif) {
+      if (sell.qr_guests > 0) {
+        await sell.update({ qr_guests: sell.qr_guests - 1 });
+        return res.json({ message: 'Actualización exitosa' });
+      } else {
+        return res.status(400).json({ error: 'No hay invitados para actualizar' });
+      }
+    } else {
+      return res.status(403).json({ error: 'No tienes permiso para actualizar esta venta' });
+    }
+  } catch (error) {
+    console.error('Error al verificar el código QR:', error);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+});
+
+
+
+
 router.post('/sells-by-ticket', async (req, res) => {
   try {
     const { ticket_id } = req.body;

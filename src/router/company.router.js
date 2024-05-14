@@ -7,10 +7,9 @@ const path = require('path');
 const express = require('express');
 const bcrypt = require('bcrypt');
 
-// Configurar multer para manejar la subida de archivos
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-      cb(null, path.join(__dirname, '../public')); // Ruta para guardar las imágenes
+      cb(null, path.join(__dirname, '../public'));
     },
     filename: function (req, file, cb) {
       const extension = path.extname(file.originalname);
@@ -20,24 +19,19 @@ const storage = multer.diskStorage({
   
   const upload = multer({ storage: storage });
   
-  // Ruta para editar la compañía
   router.put("/company/edit/:companyId", upload.single('company_img'), async (req, res) => {
     const companyId = req.params.companyId;
   
     try {
-      // Buscar la compañía por su ID
       const company = await Company.findByPk(companyId);
   
-      // Verificar si la compañía existe
       if (!company) {
         return res.status(404).json({ error: 'Company not found' });
       }
   
-      // Actualizar los datos de la compañía con los nuevos valores del formulario
       company.company_name = req.body.company_name;
       company.company_info = req.body.company_info;
   
-      // Si se cargó una nueva imagen de perfil de la compañía, actualizarla
       if (req.file) {
         company.company_img = '/public/' + req.file.filename; // Ruta de la nueva imagen
       }
