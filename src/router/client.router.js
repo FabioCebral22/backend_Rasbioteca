@@ -115,7 +115,7 @@ router.post("/clients", async (req, res) => {
         client_email: dataClients.client_email,
         client_password: hashedPassword, 
         client_name: dataClients.client_name,
-        client_img: null,
+        client_img: "/public/1715705340991-default.jpg",
     });
 
     res.status(201).json({
@@ -125,29 +125,33 @@ router.post("/clients", async (req, res) => {
     });
 });
 
-router.put("/clients/edit", upload.single('client_img'), async (req, res) => {
-    const dataClients=req.body;
-    console.log("+++++++++++++++++++++++++++++++++++++++++++EJECUTADA")
-    const hashedPassword = await bcrypt.hash(dataClients.client_password, saltRounds);
-
-    const updateClient = await Clients.update({
-        client_nickname: dataClients.client_nickname   ,
-        client_password: hashedPassword,
-        client_img: req.file ? '/public/' + req.file.filename : null
-    },
-    {
-        where: {
-            client_id:dataClients.client_id,
+router.put("/clients/edit/:clientId", upload.single('client_img'), async (req, res) => {
+    const clientId = req.params.clientId;
+  
+    try {
+        const client = await Clients.findByPk(clientId);
+    
+        if (!client) {
+            return res.status(404).json({ error: 'Client not found' });
         }
+    
+        const hashedPassword = await bcrypt.hash(req.body.client_password, saltRounds);
+
+        client.client_nickname = req.body.client_nickname;
+        client.client_password = hashedPassword;
+    
+        if (req.file) {
+            client.client_img = '/public/' + req.file.filename; 
+        }
+    
+        await client.save();
+        res.status(200).json({ message: 'Client profile updated successfully' });
+    } catch (error) {
+        console.error('Error updating client profile:', error);
+        res.status(500).json({ error: 'Internal server error' });
     }
-    );
-    res.status(200).json({
-        ok: true,
-        status: 200,
-        body: updateClient,
-        message: "Updated Client"
-    })
-})
+});
+
 
 router.delete("/clients/:id", async (req, res) => {
     try {

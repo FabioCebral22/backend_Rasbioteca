@@ -2,15 +2,15 @@ const { faker } = require("@faker-js/faker")
 const router = require("express").Router();
 const jwt = require('jsonwebtoken');
 const Company = require("../model/company.model");
+const Event = require("../model/event.model")
 const multer = require('multer');
 const path = require('path');
 const express = require('express');
 const bcrypt = require('bcrypt');
 
-// Configurar multer para manejar la subida de archivos
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-      cb(null, path.join(__dirname, '../public')); // Ruta para guardar las imágenes
+      cb(null, path.join(__dirname, '../public')); 
     },
     filename: function (req, file, cb) {
       const extension = path.extname(file.originalname);
@@ -20,33 +20,25 @@ const storage = multer.diskStorage({
   
   const upload = multer({ storage: storage });
   
-  // Ruta para editar la compañía
   router.put("/company/edit/:companyId", upload.single('company_img'), async (req, res) => {
     const companyId = req.params.companyId;
   
     try {
-      // Buscar la compañía por su ID
       const company = await Company.findByPk(companyId);
   
-      // Verificar si la compañía existe
       if (!company) {
         return res.status(404).json({ error: 'Company not found' });
       }
   
-      // Actualizar los datos de la compañía con los nuevos valores del formulario
       company.company_name = req.body.company_name;
       company.company_info = req.body.company_info;
   
-      // Si se cargó una nueva imagen de perfil de la compañía, actualizarla
       if (req.file) {
-        company.company_img = '/public/' + req.file.filename; // Ruta de la nueva imagen
+        company.company_img = '/public/' + req.file.filename; 
       }
   
-      // Guardar los cambios en la base de datos
       await company.save();
-  
-      // Devolver una respuesta exitosa
-      res.status(200).json({ message: 'Company profile updated successfully' });
+        res.status(200).json({ message: 'Company profile updated successfully' });
     } catch (error) {
       console.error('Error updating company profile:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -119,6 +111,7 @@ router.post("/companies", async (req, res) => {
             company_name: companyData.company_name,
             company_password: hashedPassword, 
             company_info: companyData.company_info,
+            company_img: "/public/1715705515535-default_company.jpg"
         });
         console.log(companyData)
         res.status(201).json({
@@ -153,6 +146,34 @@ router.post("/check-club", async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 });
+
+router.post("/check-event", async (req, res) => {
+    const { eventId } = req.body;
+  
+    try {
+      const token = req.headers.authorization.split(' ')[1];
+      if (!token) {
+        return res.status(401).json({ error: 'Token not provided' });
+      }
+  
+      const decoded = jwt.verify(token, process.env.SECRET_KEY);
+      if (!decoded || !decoded.companyData || !decoded.companyData.company_email) {
+        return res.status(401).json({ error: 'Invalid token' });
+      }
+  
+      const event = await Event.findByPk(eventId);
+      if (!event) {
+        return res.status(404).json({ error: 'Event not found' });
+      }
+  
+      const isOwner = event.company_nif === decoded.companyData.company_nif;
+      res.status(200).json({ isOwner });
+    } catch (error) {
+      console.error('Error al verificar el propietario del evento:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+
 router.put("/companies/toggle-state", async (req, res) => {
     const company_nif = req.body.company_nif;
 

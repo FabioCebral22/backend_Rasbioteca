@@ -65,7 +65,40 @@ const storage = multer.diskStorage({
     }
   });
 
+  router.put("/events/edit/:eventId", upload.single('event_image'), async (req, res) => {
+    const eventId = req.params.eventId;
+    const { event_name, event_description, event_date, event_time } = req.body;
   
+    try {
+      let eventDataToUpdate = {
+        event_name,
+        event_description,
+        event_date,
+        event_time,
+      };
+  
+      if (req.file) {
+        eventDataToUpdate.event_image = '/public/' + req.file.filename;
+      }
+  
+      const updatedEvent = await Event.update(eventDataToUpdate, {
+        where: {
+          event_id: eventId
+        }
+      });
+  
+      res.status(200).json({
+        ok: true,
+        status: 200,
+        body: updatedEvent,
+        message: "Evento actualizado exitosamente"
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Error interno del servidor' });
+    }
+  });
+
   router.get("/findevents", async (req, res) => {
     try {
         const events = await Event.findAll();
@@ -127,6 +160,25 @@ router.put("/event/toggle-state", async (req, res) => {
       res.status(200).json({ message: 'Club state toggled successfully', client_state: event.client_state });
   } catch (error) {
       res.status(500).json({ error: 'An error occurred while toggling event state' });
+  }
+});
+
+router.post('/eventDetails', async (req, res) => {
+  const { eventId } = req.body;
+  try {
+    const event = await Event.findByPk(eventId);
+    if (!event) {
+      return res.status(404).json({ error: 'Evento no encontrado' });
+    }
+    res.status(200).json({
+      ok: true,
+      status: 200,
+      body: event,
+      message: "Detalles del evento"
+    });
+  } catch (error) {
+    console.error('Error al obtener los detalles del evento:', error);
+    res.status(500).json({ error: 'Error interno del servidor' });
   }
 });
 
